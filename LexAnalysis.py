@@ -49,38 +49,26 @@ class DLangLexer(Lexer):
 if __name__ == '__main__':
     lexer = DLangLexer()
     
-        
     print("DLang Lexical Analyzer")
-    print("Type your code below. Enter 'exit' to quit or press Ctrl+C to terminate.")
+    print("Reading code from 'input.txt'. Please ensure the file exists.")
 
-    while True:
-        try:
-            # Prompt for input
-            text = input('dlang > ')
-            
-            # Exit condition
-            if text.strip().lower() == 'exit':
-                print("Exiting...")
-                break
+    try:
+        # Open the input file
+        with open('input.txt', 'r') as file:
+            text = file.read()
 
-            # Tokenize the input
-            tokens = lexer.tokenize(text)
-            if not tokens:
-                print("No tokens found. Please enter valid DLang code.")
-                continue
-
+        # Tokenize the input
+        tokens = lexer.tokenize(text)
+        if not tokens:
+            print("No tokens found. Please enter valid DLang code.")
+        else:
             # Display tokens
             for tok in tokens:
                 print(f'type={tok.type}, value={tok.value}')
 
-        except KeyboardInterrupt:
-            print("\nProgram terminated by user.")
-            break
-        except EOFError:
-            print("\nEOF detected. Exiting.")
-            break
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            continue
+    except FileNotFoundError:
+        print("Error: 'input.txt' not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
     print("Lexical analysis complete.")
