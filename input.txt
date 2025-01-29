@@ -1,2 +1,7 @@
-int a = 5;
-print(a);
+int x = 5; // Integer variable
+double y = 3.14;
+string msg = "Hello World";
+bool flag = True;
+if (x > 0) {
+    print(msg);
+}
