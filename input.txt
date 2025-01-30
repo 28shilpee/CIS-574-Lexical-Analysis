@@ -1,7 +1,19 @@
-int x = 5; // Integer variable
-double y = 3.14;
-string msg = "Hello World";
-bool flag = True;
-if (x > 0) {
-    print(msg);
+// This is a single-line comment
+/* This is a
+   multi-line comment */
+int main() {
+    int x = 42;
+    double y = 3.14E-2;
+    string str = "Hello, DLang!";
+    bool flag = True;
+    if (x > 10 && y < 1.0) {
+        return x;
+    } else {
+        return nothing;
+    }
+    // Lexical errors
+    int 123abc = 45; 
+    double .45 = 0.45;  
+    string badStr = "Missing close quote;
+    bool invalidBool = Tru;  
 }

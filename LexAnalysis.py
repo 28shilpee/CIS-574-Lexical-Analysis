@@ -1,18 +1,27 @@
 from sly import Lexer
 
 class DLangLexer(Lexer):
-    tokens = {'KEYWORD', 'IDENTIFIER', 'BOOLEAN', 'INTEGER', 'DOUBLE', 'STRING', 'OPERATOR'}
+    tokens = {BOOLEAN, KEYWORD, IDENTIFIER, INTEGER, DOUBLE, STRING, OPERATOR, COMMENT}  # BOOLEAN first
 
     # Ignored characters
     ignore = ' \t\r'
 
     # Token patterns
-    KEYWORD = r'(nothing|int|double|bool|string|class|interface|null|this|extends|implements|for|while|if|else|return|break|new|ArrayInstance|Output|InputInt|InputLine)'
-    BOOLEAN = r'(True|False)'
-    INTEGER = r'\d+'
-    DOUBLE = r'\d+\.(?:\d*([Ee][+-]?\d+)?)?'
+    COMMENT = r'//.*|/\*(.|\n)*?\*/'
+    KEYWORD = r'\b(nothing|int|double|bool|string|class|interface|null|this|extends|implements|for|while|if|else|return|break|new|ArrayInstance|Output|InputInt|InputLine)\b'
+    BOOLEAN = r'\b(True|False)\b'
+    INTEGER = r'\b\d+\b'
+    DOUBLE = r'\b\d+\.\d*([Ee][+-]?\d+)?\b|\b\d+[Ee][+-]?\d+\b'
     STRING = r'"[^"\n]*"'
-    OPERATOR = r'(\+|-|\*|/|%|<=?|>=?|==?|!=|&&|\|\||!|;|,|\.|[\[\](){}])'
+    OPERATOR = r'\+|-|\*|/|%|<=?|>=?|==?|!=|&&|\|\||!|;|,|\.|[\[\](){}]'
+
+    # Boolean validation
+    @_(r'\b(True|False)\b')
+    def BOOLEAN(self, t):
+        if t.value not in {'True', 'False'}:
+            print(f"Error: Invalid boolean literal '{t.value}' at line {self.lineno}")
+            return None
+        return t
 
     # Identifier pattern with length check
     @_(r'[a-zA-Z_][a-zA-Z0-9_]*')
@@ -24,15 +33,6 @@ class DLangLexer(Lexer):
             t.type = 'KEYWORD'
         return t
 
-    # Comments
-    @_(r'//.*')
-    def COMMENT_SINGLE(self, t):
-        pass
-
-    @_(r'/\*(.|\n)*?\*/')
-    def COMMENT_MULTI(self, t):
-        self.lineno += t.value.count('\n')
-
     # Line number tracking
     @_(r'\n+')
     def ignore_newline(self, t):
@@ -40,7 +40,7 @@ class DLangLexer(Lexer):
 
     # Error handling
     def error(self, t):
-        print(f"Illegal character '{t.value[0]}' at line {self.lineno}")
+        print(f"Lexical error: Illegal character '{t.value[0]}' at line {self.lineno}")
         self.index += 1
 
     # Priority handling for keywords vs identifiers
