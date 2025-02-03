@@ -1,7 +1,7 @@
 from sly import Lexer
 
 class DLangLexer(Lexer):
-    tokens = {BOOLEAN, KEYWORD, IDENTIFIER, INTEGER, DOUBLE, STRING, OPERATOR, COMMENT}  # BOOLEAN first
+    tokens = {BOOLEAN, KEYWORD, IDENTIFIER, INTEGER, DOUBLE, STRING, OPERATOR, COMMENT}
 
     # Ignored characters
     ignore = ' \t\r'
@@ -46,29 +46,48 @@ class DLangLexer(Lexer):
     # Priority handling for keywords vs identifiers
     keywords = {'nothing', 'int', 'double', 'bool', 'string', 'class', 'interface', 'null', 'this', 'extends', 'implements', 'for', 'while', 'if', 'else', 'return', 'break', 'new', 'ArrayInstance', 'Output', 'InputInt', 'InputLine'}
 
+def analyze_code(lexer, code):
+    tokens = lexer.tokenize(code)
+    if not tokens:
+        print("No tokens found. Please enter valid DLang code.")
+    else:
+        for tok in tokens:
+            print(f'type={tok.type}, value={tok.value}')
+
 if __name__ == '__main__':
     lexer = DLangLexer()
     
     print("DLang Lexical Analyzer")
-    print("Reading code from 'input.txt'. Please ensure the file exists.")
+    print("Enter 'file' to read from 'input.txt', 'input' to enter code manually, or 'exit' to quit.")
 
-    try:
-        # Open the input file
-        with open('input.txt', 'r') as file:
-            text = file.read()
+    while True:
+        user_option = input("Enter your choice (file/input/exit): ").lower()
 
-        # Tokenize the input
-        tokens = lexer.tokenize(text)
-        if not tokens:
-            print("No tokens found. Please enter valid DLang code.")
+        if user_option == 'exit':
+            print("Exiting the program.")
+            break
+        elif user_option == 'file':
+            try:
+                with open('input.txt', 'r') as file:
+                    text = file.read()
+                print("Analyzing code from 'input.txt':")
+                analyze_code(lexer, text)
+            except FileNotFoundError:
+                print("Error: 'input.txt' not found.")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+        elif user_option == 'input':
+            print("Enter your DLang code (type 'END' on a new line to finish):")
+            code_lines = []
+            while True:
+                line = input()
+                if line.strip().upper() == 'END':
+                    break
+                code_lines.append(line)
+            code = '\n'.join(code_lines)
+            print("Analyzing input code:")
+            analyze_code(lexer, code)
         else:
-            # Display tokens
-            for tok in tokens:
-                print(f'type={tok.type}, value={tok.value}')
-
-    except FileNotFoundError:
-        print("Error: 'input.txt' not found.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+            print("Invalid choice. Please enter 'file', 'input', or 'exit'.")
 
     print("Lexical analysis complete.")
